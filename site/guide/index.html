@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carthago — The Chronicler's Strategy Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus&family=IBM+Plex+Sans+Condensed:ital,wght@0,400;0,500;0,600;1,400&family=Noto+Sans+Phoenician&display=swap">
+<style>
+:root {
+  --paper: #ece8df; --page: #f6f3ec; --ink: #1f1b24; --muted: #5e5866; --rule: #d6cfc2;
+  --purple: #6e1f52; --purple-deep: #4a1236; --cinnabar: #a3361d; --bronze: #86652a; --bronze-lt: #c79a4a;
+  --sea: #cfdde0; --good: #2f6b3f; --bad: #a3361d;
+  --display: "Marcellus", Georgia, serif; --ui: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif; --phoen: "Noto Sans Phoenician", serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --paper: #121419; --page: #1b1e25; --ink: #e9e5ec; --muted: #a39dab; --rule: #343741; --purple: #c96aa9; --purple-deep: #8e3f73; --cinnabar: #e07a57; --bronze: #d2ae66; --bronze-lt: #e3c27d; --sea: #1a2c31; --good: #7cc08d; --bad: #ee8866; }
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 17px/1.6 var(--ui); }
+img { max-width: 100%; display: block; }
+a { color: var(--purple); }
+.book { max-width: 1120px; margin: 0 auto; padding: 0 16px 80px; }
+.backlink { position: fixed; top: 14px; left: 14px; z-index: 5; padding: 7px 14px; border-radius: 999px; background: var(--bronze-lt); color: #2a1a06; font: 600 14px var(--ui); text-decoration: none; box-shadow: 0 4px 14px rgb(0 0 0 / .3); }
+.backlink:hover { filter: brightness(1.06); }
+.new { display: inline-block; margin-left: 8px; padding: 1px 8px; border-radius: 999px; background: var(--bronze-lt); color: #2a1a06; font: 600 11px var(--ui); letter-spacing: .08em; vertical-align: 4px; }
+
+/* The cover */
+.cover { position: relative; margin: 0 -16px; min-height: 92vh; display: grid; align-items: end; overflow: hidden; background: var(--purple-deep); color: #f7ecd9; }
+.cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .35; filter: saturate(.8) contrast(1.05); }
+.cover::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgb(40 8 30 / .2) 0%, rgb(40 8 30 / .92) 78%); }
+.cover-in { position: relative; z-index: 1; padding: 64px clamp(20px, 6vw, 72px) 56px; display: grid; gap: 14px; max-width: 900px; }
+.cover .band { display: inline-block; justify-self: start; background: var(--bronze-lt); color: #2a1a06; font: 600 13px var(--ui); letter-spacing: .14em; padding: 5px 12px; border-radius: 2px; }
+.cover h1 { margin: 0; font: 400 clamp(64px, 12vw, 140px)/.9 var(--display); letter-spacing: .02em; }
+.cover .pun { font: 30px var(--phoen); color: #e9b9d8; letter-spacing: .12em; }
+.cover .sub { font: 400 clamp(22px, 3vw, 30px)/1.25 var(--display); color: #f1dfc3; max-width: 34ch; }
+.cover .blurb { color: #e4d6c6; max-width: 60ch; }
+.cover .seal { position: absolute; right: clamp(20px, 6vw, 72px); top: 48px; z-index: 1; width: 132px; height: 132px; border-radius: 50%; display: grid; place-items: center; text-align: center; background: radial-gradient(circle at 30% 25%, #e8c47a, #a57a2c 55%, #6b4c16); color: #2a1a06; font: 600 13px/1.15 var(--ui); letter-spacing: .06em; box-shadow: 0 10px 30px rgb(0 0 0 / .4); transform: rotate(-8deg); padding: 12px; }
+.cover .seal b { display: block; font: 400 26px/1 var(--display); letter-spacing: 0; }
+
+/* Contents */
+.toc { margin: 48px 0 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; }
+.toc a { display: grid; grid-template-columns: 54px 1fr; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 10px; background: var(--page); color: var(--ink); text-decoration: none; box-shadow: inset 0 0 0 1px var(--rule); }
+.toc a:hover { box-shadow: inset 0 0 0 2px var(--bronze); }
+.toc .n { font: 400 34px/1 var(--display); color: var(--purple); text-align: center; }
+.toc b { font: 400 19px/1.2 var(--display); display: block; }
+.toc small { color: var(--muted); font-size: 14px; }
+
+/* Chapters */
+.chapter { margin-top: 72px; background: var(--page); border-radius: 14px; overflow: hidden; box-shadow: 0 1px 0 var(--rule), 0 18px 40px rgb(0 0 0 / .07); }
+.opener { display: grid; grid-template-columns: auto 1fr; gap: 22px; align-items: end; padding: 34px clamp(18px, 4vw, 44px) 24px; background: linear-gradient(120deg, var(--purple-deep), var(--purple) 70%, var(--cinnabar)); color: #f7ecd9; }
+.opener .num { font: 400 clamp(72px, 11vw, 120px)/.8 var(--display); color: var(--bronze-lt); }
+.opener h2 { margin: 0; font: 400 clamp(32px, 5vw, 50px)/1.05 var(--display); }
+.opener p { margin: 8px 0 0; color: #ecd9c4; max-width: 62ch; font-size: 17px; }
+.body { padding: 26px clamp(18px, 4vw, 44px) 40px; display: grid; gap: 18px; }
+.body h3 { margin: 18px 0 0; font: 400 28px/1.15 var(--display); color: var(--purple); }
+.body h4 { margin: 8px 0 0; font: 600 18px var(--ui); }
+.body p { margin: 0; max-width: 74ch; }
+.body ul, .body ol { margin: 0; padding-left: 22px; max-width: 74ch; }
+.body li + li { margin-top: 5px; }
+.lede::first-letter { float: left; font: 400 64px/.82 var(--display); color: var(--purple); margin: 6px 10px 0 0; }
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 22px; align-items: start; }
+
+/* Screenshots */
+figure { margin: 0; }
+.shot { background: #0f0d12; padding: 8px; border-radius: 10px; box-shadow: 0 10px 26px rgb(0 0 0 / .18); position: relative; }
+.shot img { border-radius: 4px; }
+figcaption { margin-top: 8px; font-size: 14.5px; color: var(--muted); max-width: 90ch; }
+figcaption b { color: var(--ink); font-weight: 600; }
+.callout { position: absolute; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--bronze-lt); color: #2a1a06; font: 600 15px var(--ui); box-shadow: 0 0 0 3px #0f0d12, 0 4px 10px rgb(0 0 0 / .5); transform: translate(-50%, -50%); }
+.keylist { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 8px 22px; list-style: none; padding: 0 !important; }
+.keylist li { display: grid; grid-template-columns: 30px 1fr; gap: 10px; align-items: start; margin: 0 !important; }
+.keylist .k { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--bronze-lt); color: #2a1a06; font: 600 13px var(--ui); margin-top: 2px; }
+
+/* Boxes */
+.box { border-radius: 10px; padding: 14px 18px 16px; display: grid; gap: 6px; max-width: 80ch; }
+.box .tag { font: 600 13px var(--ui); letter-spacing: .12em; display: inline-flex; align-items: center; gap: 8px; }
+.box .tag::before { content: ''; width: 14px; height: 14px; border-radius: 50%; background: currentColor; }
+.tip { background: color-mix(in srgb, var(--bronze) 12%, var(--page)); box-shadow: inset 4px 0 0 var(--bronze); }
+.tip .tag { color: var(--bronze); }
+.warn { background: color-mix(in srgb, var(--cinnabar) 11%, var(--page)); box-shadow: inset 4px 0 0 var(--cinnabar); }
+.warn .tag { color: var(--cinnabar); }
+.secret { background: #231a2b; color: #efe6f4; box-shadow: inset 4px 0 0 #c79a4a; }
+.secret .tag { color: #e3c27d; }
+.note { background: color-mix(in srgb, var(--sea) 55%, var(--page)); box-shadow: inset 4px 0 0 #3f6f7a; }
+.note .tag { color: #2f5e69; }
+
+/* Walkthrough steps (a real sequence) */
+.steps { counter-reset: s; display: grid; gap: 12px; list-style: none; padding: 0 !important; }
+.steps li { counter-increment: s; display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: start; margin: 0 !important; }
+.steps li::before { content: counter(s); width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--purple); color: #f7ecd9; font: 400 22px var(--display); }
+
+.res-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; }
+.res { border-radius: 12px; padding: 14px 18px 16px; background: var(--paper); box-shadow: inset 0 4px 0 var(--bronze), inset 0 0 0 1px var(--rule); display: grid; gap: 8px; align-content: start; font-size: 15.5px; }
+.res h4 { margin: 0; font: 400 24px var(--display); color: var(--purple); }
+.res p, .res ul { margin: 0; }
+.res .lever { background: color-mix(in srgb, var(--bronze) 12%, var(--page)); padding: 8px 10px; border-radius: 8px; }
+.res .save { color: var(--muted); }
+/* Tables and cards */
+table { border-collapse: collapse; width: 100%; font-size: 15.5px; }
+th { text-align: left; font: 600 14px var(--ui); color: var(--muted); padding: 8px 10px; border-bottom: 2px solid var(--rule); }
+td { padding: 9px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+td b { font-weight: 600; }
+.stars { color: var(--bronze); letter-spacing: 2px; white-space: nowrap; }
+.stars i { font-style: normal; color: var(--rule); }
+.plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+.plan { border-radius: 12px; padding: 16px 18px; background: var(--paper); box-shadow: inset 0 0 0 1px var(--rule); display: grid; gap: 8px; align-content: start; }
+.plan h4 { margin: 0; font: 400 23px/1.15 var(--display); color: var(--ink); }
+.plan .who { font-size: 13.5px; color: var(--muted); }
+.plan .who b { color: var(--purple); font-weight: 600; }
+.plan .moves { font-size: 15px; }
+.plan .moves b { color: var(--bronze); font-weight: 600; }
+.side-c { box-shadow: inset 0 4px 0 var(--purple), inset 0 0 0 1px var(--rule); }
+.side-r { box-shadow: inset 0 4px 0 var(--cinnabar), inset 0 0 0 1px var(--rule); }
+.side-b { box-shadow: inset 0 4px 0 var(--bronze), inset 0 0 0 1px var(--rule); }
+.pill { display: inline-block; padding: 1px 9px; border-radius: 999px; font-size: 13px; background: var(--paper); box-shadow: inset 0 0 0 1px var(--rule); }
+.gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.gallery figcaption { font-size: 13.5px; }
+.glossary { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 10px 26px; }
+.glossary div b { font: 400 19px var(--display); color: var(--purple); display: block; }
+.glossary div { font-size: 15.5px; }
+footer { margin-top: 60px; text-align: center; color: var(--muted); font-size: 14px; }
+@media (max-width: 640px) { .opener { grid-template-columns: 1fr; } .cover .seal { width: 100px; height: 100px; top: 20px; font-size: 11px; } .cover .seal b { font-size: 20px; } }
+@media print { .chapter { break-before: page; box-shadow: none; } .cover { min-height: 100vh; } }
+</style>
+</head>
+<body>
+<div class="book">
+<a class="backlink" href="../../index.html">← Back to the game</a>
+
+<header class="cover">
+  <img src="img/04-screen.jpg" alt="">
+  <div class="seal"><span><b>Every</b>plan, rival and deed revealed</span></div>
+  <div class="cover-in">
+    <span class="band">THE CHRONICLER'S STRATEGY GUIDE</span>
+    <h1>Carthago</h1>
+    <span class="pun" aria-label="Qart-Ḥadašt">𐤒𐤓𐤕𐤇𐤃𐤔𐤕</span>
+    <p class="sub">Two rival republics, one sea, and a history that changes only when you change it.</p>
+    <p class="blurb">A field guide for your first chronicles: the screen, the year, the crisis, the Council, the works, the courts, the war, the gods, and the long judgment of history. Fifteen grand strategies for both republics, a threat chart for every rival, and the secrets the histories keep.</p>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Contents">
+  <a href="#c1"><span class="n">1</span><span><b>Welcome to the Middle Sea</b><small>What the game is, and how you win</small></span></a>
+  <a href="#c2"><span class="n">2</span><span><b>Reading the screen</b><small>The ribbon, the rail, the map, the outliner</small></span></a>
+  <a href="#c3"><span class="n">3</span><span><b>Your first winter</b><small>A walkthrough, move by move</small></span></a>
+  <a href="#c4"><span class="n">4</span><span><b>What you spend</b><small>Standing, silver, hands, the three reputations, and how to get more</small></span></a>
+  <a href="#c5"><span class="n">5</span><span><b>The crisis</b><small>Posturing, claims, the public gesture</small></span></a>
+  <a href="#c6"><span class="n">6</span><span><b>The Council and the houses</b><small>Votes, lobbying, elections, consuls</small></span></a>
+  <a href="#c7"><span class="n">7</span><span><b>Works and lands</b><small>The purse, the steward, colonies, clients</small></span></a>
+  <a href="#c8"><span class="n">8</span><span><b>The courts of the world</b><small>Kings, friends, promises, merchants</small></span></a>
+  <a href="#c9"><span class="n">9</span><span><b>War</b><small>Mobilization, generals, the peace</small></span></a>
+  <a href="#c10"><span class="n">10</span><span><b>The gods and the long memory</b><small>Cults, culture, blending</small></span></a>
+  <a href="#c11"><span class="n">11</span><span><b>Playing Carthage, playing Rome</b><small>Two republics, two economies</small></span></a>
+  <a href="#c12"><span class="n">12</span><span><b>Fifteen grand strategies</b><small>Playbooks for both sides</small></span></a>
+  <a href="#c13"><span class="n">13</span><span><b>Know your rival</b><small>The threat chart and the dossier</small></span></a>
+  <a href="#c14"><span class="n">14</span><span><b>Deeds and the legacy</b><small>What the histories record</small></span></a>
+  <a href="#c15"><span class="n">15</span><span><b>Secrets and quick reference</b><small>Tips, mistakes, glossary</small></span></a>
+</nav>
+
+<!-- 1 -->
+<section class="chapter" id="c1">
+  <div class="opener"><span class="num">1</span><div><h2>Welcome to the Middle Sea</h2><p>It is 264 BC. Carthage rules the sea; Rome has just finished swallowing Italy. Between them lie Sicily, Sardinia, Iberia, a dozen free peoples, and three Greek kings watching to see who blinks.</p></div></div>
+  <div class="body">
+    <p class="lede">You speak for one republic. You do not command it. Councils vote, consuls follow their own agendas, great families rise and fail, and the rival across the water has a plan of its own. What you control is where the republic's attention, money and good name go, winter after winter. Carthago is a game about spending those three things well.</p>
+    <div class="two">
+      <div class="box note"><span class="tag">WHAT CAN HAPPEN</span><p>Nothing is scripted. There is no fixed First Punic War, no Hannibal on a date, no guaranteed fall of Carthage. The crises that arrive are the ones your choices made likely; the wars are the ones someone chose. Rome can lose. Carthage can win. Both can still be standing, at peace, in 146 BC.</p></div>
+      <div class="box note"><span class="tag">HOW YOU "WIN"</span><p>When the chronicle ends, the historians judge it: whose lands, whose tongues, whose gods, whose law, and whose good name survived into the centuries after. Then the story runs forward to the year 2000, and you see the world your choices made. You can also set yourself an <b>aim</b> (a particular legacy) and chase it.</p></div>
+    </div>
+    <figure><div class="shot"><img src="img/01-title.jpg" alt="The title screen"></div><figcaption><b>The title screen.</b> Continue your chronicle, start a new one, load a saved game, change the options, or open this guide. Your game also saves itself after every order. (In a game, the Game panel links here too.)</figcaption></figure>
+    <h3>Choosing your game</h3>
+    <figure><div class="shot"><img src="img/02-newgame.jpg" alt="The New game page"></div><figcaption><b>New game.</b> Pick your republic, how far the chronicle runs, and how strong a rival you want. You can also name a world by its number, so you and a friend can play the same deal.</figcaption></figure>
+    <div class="two">
+      <div><h4>How far the chronicle runs</h4><ul><li><b>The First War (264–241 BC)</b>: a short game, about an evening. The best way to learn.</li><li><b>Two wars (264–201 BC)</b>: long enough for a generation of works to pay off.</li><li><b>The whole chronicle (264–146 BC)</b>: the full game. Colonies, cultures and dynasties have time to matter.</li></ul></div>
+      <div><h4>How strong a rival</h4><ul><li><b>Gentle / Able / Shrewd / Masterly</b>: the rival's plan and skill are drawn from the harness's own rankings, weakest to strongest.</li><li><b>Anyone</b>: any plan, any skill.</li><li><b>As fate deals</b>: drawn from the world itself.</li><li>Or open <b>choose the rival's plan by name</b> to face a particular strategy (Chapter 13).</li></ul></div>
+    </div>
+    <div class="box tip"><span class="tag">TIP</span><p>For your first game, play <b>Carthage in the First War against a Gentle rival</b>. Carthage starts rich and the short scenario ends before your mistakes compound. Your second game: the same, as Rome.</p></div>
+  </div>
+</section>
+
+<!-- 2 -->
+<section class="chapter" id="c2">
+  <div class="opener"><span class="num">2</span><div><h2>Reading the screen</h2><p>The map is the room. Everything else floats over it, and every number on it can tell you why it is what it is: hover it.</p></div></div>
+  <div class="body">
+    <figure><div class="shot"><img src="img/04-screen.jpg" alt="The main screen, annotated">
+      <span class="callout" style="left:11.5%;top:8.5%">1</span>
+      <span class="callout" style="left:28%;top:9.5%">2</span>
+      <span class="callout" style="left:50%;top:9.5%">3</span>
+      <span class="callout" style="left:92%;top:10%">4</span>
+      <span class="callout" style="left:5.5%;top:30%">5</span>
+      <span class="callout" style="left:52%;top:62%">6</span>
+      <span class="callout" style="left:10.5%;top:89%">7</span>
+      <span class="callout" style="left:74.5%;top:14%">8</span>
+      <span class="callout" style="left:13%;top:98.5%">9</span>
+    </div><figcaption><b>The main screen</b> in the first winter, playing Carthage.</figcaption></figure>
+    <ul class="keylist">
+      <li><span class="k">1</span><span><b>The season and the year.</b> Winter is when you decide; the sailing season is when armies march and fleets sail.</span></li>
+      <li><span class="k">2</span><span><b>Your instruments.</b> Silver, Hands, Standing, Concord, Prestige, Fides. The small arrows show what changed since last winter. Click one to open the view it belongs to.</span></li>
+      <li><span class="k">3</span><span><b>The rivalry.</b> Tension between the republics, and the rival's War Fever as a rumor.</span></li>
+      <li><span class="k">4</span><span><b>End the winter.</b> The bronze seal. It waits while a crisis or an embassy is unanswered.</span></li>
+      <li><span class="k">5</span><span><b>The rail.</b> Seven views: Works, Council, Houses, Courts, War Room, Gods, Lands, plus Deeds, Journal and Game.</span></li>
+      <li><span class="k">6</span><span><b>The map.</b> Hover a land for its owner, roots, wealth and culture. Click it to see what you can do there.</span></li>
+      <li><span class="k">7</span><span><b>The map bar.</b> Map modes on the left, lenses (actions on the map) in the middle, and the key.</span></li>
+      <li><span class="k">8</span><span><b>The outliner.</b> What needs you, your aim, and the rival's dossier.</span></li>
+      <li><span class="k">9</span><span><b>The ticker.</b> The last things that happened. The Journal keeps them all.</span></li>
+    </ul>
+    <figure><div class="shot"><img src="img/50-tip-history.jpg" alt="The Prestige tooltip with its history"></div><figcaption><b>Everything explains itself.</b> Hover any number for its reasons: every part that adds up to it, the gains against the losses in one bar, the biggest parts in bold. Under the instruments in the top bar, a line shows its history winter by winter, wars shaded, and Rome's line beside yours wherever the world can see it (Prestige, Fides). Click to pin a tooltip and look deeper.</figcaption></figure>
+    <h3>How each system works <span class="new">NEW</span></h3>
+    <figure><div class="shot"><img src="img/60-houses-flow.jpg" alt="The Houses view with its how-it-works chain"></div><figcaption><b>Every view opens with how it works:</b> a chain from what you control (edged in bronze) to what it does, with today's values. Hover a step for its why. Then come the view's actions, then the details.</figcaption></figure>
+    <h3>The map modes</h3>
+    <div class="gallery">
+      <figure><div class="shot"><img src="img/18-mode-roots.jpg" alt="Roots mode"></div><figcaption><b>Roots.</b> How firmly each ruler holds its land. Shallow roots revolt and fall.</figcaption></figure>
+      <figure><div class="shot"><img src="img/18-mode-stage.jpg" alt="Stage mode"></div><figcaption><b>Stage.</b> Which way the foreign powers lean.</figcaption></figure>
+      <figure><div class="shot"><img src="img/18-mode-culture.jpg" alt="Culture mode"></div><figcaption><b>Culture.</b> The tongue each land speaks. This is what the legacy weighs.</figcaption></figure>
+      <figure><div class="shot"><img src="img/18-mode-trade.jpg" alt="Trade mode"></div><figcaption><b>Trade.</b> The sea lanes each republic works, and its trading posts.</figcaption></figure>
+    </div>
+    <h3>Acting from the map: lenses</h3>
+    <figure><div class="shot"><img src="img/17-lens.jpg" alt="The Fields lens"></div><figcaption><b>The Fields lens.</b> Pick a lens on the map bar and every land where that action can be taken lights up. Click one and its card opens, already aimed at that land. Escape leaves the lens.</figcaption></figure>
+    <div class="box tip"><span class="tag">TIP</span><p>Lenses are the fastest way to answer "where can I do this?" Before you found a colony or protect a people, flick through the lenses to see your options at a glance.</p></div>
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="chapter" id="c3">
+  <div class="opener"><span class="num">3</span><div><h2>Your first winter</h2><p>A walkthrough of a sensible opening for Carthage. None of it is required; all of it teaches the rhythm of the year.</p></div></div>
+  <div class="body">
+    <figure><div class="shot"><img src="img/03-tour.jpg" alt="The first-game tour"></div><figcaption><b>The first-game tour</b> walks you around the screen in seven short steps. You can see it again from Options.</figcaption></figure>
+    <ol class="steps">
+      <li><div><h4>Look before you spend</h4><p>Open the <b>Council</b> and read the <b>Counsel</b>: each faction's leader urges a grand strategy and names what it would have you do this winter. You don't have to follow any of them, but they show you what the factions want. Then glance at the outliner: is anything urgent?</p></div></li>
+      <li><div><h4>Set the works purse</h4><p>Open <b>Works</b>. The purse is the share of your income the steward may spend on works. Half is a sound start: enough to build, with silver left in the treasury for surprises.</p></div></li>
+      <li><div><h4>Begin one work</h4><p>Pick a work tile, say <b>Improve the fields</b>, and choose a land in the card. The card's foot shows the price by the year and how many winters it takes. Press the seal. The steward pays it each winter from now on.</p></div></li>
+      <li><div><h4>Make a friend abroad</h4><p>Open the <b>Courts</b>. A free people who already lean your way (the Numidian kings often do) can be <b>taken under protection</b>. It costs a little Fides now; over the years they lean toward you and will accept you as patron.</p></div></li>
+      <li><div><h4>Keep a Standing in reserve</h4><p>Standing carries over from winter to winter. A crisis may ask for a public gesture, and a close vote may need lobbying. Don't spend your last point on something small.</p></div></li>
+      <li><div><h4>End the winter</h4><p>Press <b>End the winter</b>. The sailing season plays out: storms, campaigns, the rival's moves. Then press it again to reach the next winter, and the next decisions.</p></div></li>
+    </ol>
+    <figure><div class="shot"><img src="img/07-card-fields.jpg" alt="A work card with its price"></div><figcaption><b>An action's card.</b> Picking an action gives its card the whole view (its × brings the view back). Choose where (by clicking a piece, or on the map with a lens), read the price in the card's foot, and press the seal. Red tokens are what it costs, green what it gives, grey how many winters it takes; a work's <b>When finished</b> row says what it gives once it is built. If you can't act yet, the card tells you why in plain words.</figcaption></figure>
+    <div class="box warn"><span class="tag">WARNING</span><p>Three works at most can be under way. A work that isn't paid <b>stalls</b>, and after two unpaid winters it starts to lose its progress. Don't open more works than your purse can carry.</p></div>
+  </div>
+</section>
+
+<!-- 4 -->
+<section class="chapter" id="c4">
+  <div class="opener"><span class="num">4</span><div><h2>What you spend</h2><p>Three things flow through your hands every year, and three reputations follow you everywhere.</p></div></div>
+  <div class="body">
+    <div class="two">
+      <div class="box tip"><span class="tag">STANDING: YOUR POLITICAL CAPITAL</span><p>From 0 to 10, earned each winter. Every action costs Standing (war and a treaty cost more), and so do lobbying a faction and persuading a consul. It <b>carries over</b>, so a quiet year buys a busy one. You earn more when the city is united (high Concord) and when your ally holds office.</p></div>
+      <div class="box tip"><span class="tag">SILVER: THE TREASURY</span><p>Income from your lands, the sea trade, clients' tribute and mines. Works, wages and many actions draw on it. The treasury never goes below zero: Carthage runs up <b>arrears</b> to its mercenaries instead, and Rome's great houses <b>lend</b>, to be repaid by the citizens.</p></div>
+      <div class="box tip"><span class="tag">HANDS: LABOUR AND LEVIES</span><p>The year's work of the people you rule. Raising the army takes hands first, and more than you'd expect at the higher levels. What's left builds the works. Rome's Italian allies lend it hands; Carthage's hired companies stand in for its own people.</p></div>
+    </div>
+    <h3>The three reputations</h3>
+    <table>
+      <tr><th>Instrument</th><th>What it is</th><th>Raised by</th><th>Lowered by</th></tr>
+      <tr><td><b>Concord</b></td><td>How united your city is</td><td>Fear of the rival, games and festivals, the people's god honoured, a war that starts well</td><td>Bitter votes, overruled factions, long wars, defeats</td></tr>
+      <tr><td><b>Prestige</b></td><td>Whether you win your standoffs</td><td>Stakes won, the rival giving way, peaces on your terms, deeds</td><td>Conceding, abandoning friends, losing wars</td></tr>
+      <tr><td><b>Fides</b></td><td>Whether you keep your word</td><td>Standing firm on just claims, kept promises, historians, deeds</td><td>Threats on weak claims, arming or warring without a just claim, broken protection</td></tr>
+    </table>
+    <div class="box note"><span class="tag">WHY IT MATTERS</span><p>The watching powers (the Greek courts, the kings, the free peoples) lean toward the republic with the better Fides and Prestige. Leaning powers become clients, allies in war, and friends at the peace. Your reputation is your foreign policy.</p></div>
+    <h3 id="more">How to get more of each <span class="new">NEW</span></h3>
+    <p>Every resource has a few big levers and a lot of small ones. These are the big ones. To see exactly where yours stand this winter, hover the resource's number in the top bar: its tooltip lists every source, and the line underneath shows its history.</p>
+    <figure><div class="shot"><img src="img/05-standing-tip.jpg" alt="The Standing tooltip"></div><figcaption><b>Where your Standing comes from.</b> Hover Standing in the top bar to see what it earns each winter, part by part. Here it earns three a winter but is already full at ten, so this winter's earnings are wasted: spend it.</figcaption></figure>
+    <div class="res-grid">
+      <div class="res"><h4>Standing</h4>
+        <p class="lever"><b>Best lever: Concord.</b> A trusting city (Concord 50 or more) earns you an extra point every winter, and a united one (75 or more) another. A divided city (below 25) costs you one.</p>
+        <p><b>Also raised by:</b></p><ul>
+          <li><b>An ally in office.</b> Back a candidate from a friendly faction before the election (in the Houses). While he serves, he earns you a point every winter.</li>
+          <li><b>Two deeds:</b> <i>A Vote Carried</i> (win any vote by lobbying, the easiest deed in the game) and <i>The United City</i>. Each earns a point every winter for the rest of the chronicle.</li>
+          <li>A general ruling by decree also adds one. It is a bad bargain.</li></ul>
+        <p><b>Drained by:</b> every action (war and treaties cost two), lobbying a faction, persuading a consul, a public gesture in a crisis.</p>
+        <p class="save"><b>Save it:</b> it carries over, up to ten. Past ten it is wasted, so spend before you hit the cap (the outliner warns you). As Rome, let the consuls act on their own for free, and persuade them only when it matters.</p></div>
+      <div class="res"><h4>Concord</h4>
+        <p class="lever"><b>Best lever: content factions.</b> Give them the votes they want (the Counsel names them), and avoid overruling them in bitter votes.</p>
+        <p><b>Also raised by:</b> games, festivals, honouring the people's god (Tanit, Ceres), a light tax, a victory or a triumph in a crisis, and some fear of the rival (Tension, or a war that begins).</p>
+        <p><b>Drained by:</b> a heavy tax, high mobilization, humiliations, bitter votes, and the weariness of a long war.</p></div>
+      <div class="res"><h4>Silver</h4>
+        <p class="lever"><b>Best lever: build.</b> Fields, harbors and mines raise your lands' yield for good, so a works purse set to half or more pays for itself over a long game.</p>
+        <p><b>Also raised by:</b> more lands, sea trade between your ports, trading posts abroad, tribute from loyal clients, colonies, the Egyptian grain treaty, secret routes beyond the Pillars (Carthage), booty and indemnities in war, a heavy tax.</p>
+        <p><b>Drained by:</b> garrisons, mobilization, mercenaries' wages (Carthage), works, and most actions. A war also cuts sea trade.</p></div>
+      <div class="res"><h4>Hands</h4>
+        <p class="lever"><b>Best lever: people.</b> Hands come from the people you rule, and fields make a land's people grow.</p>
+        <p><b>Also raised by:</b> more lands, loyal Italian allies (Rome), hired companies (Carthage).</p>
+        <p><b>Drained by:</b> mobilization, much more so at the higher levels, and works under way. A thin census (Rome) also means fewer.</p></div>
+      <div class="res"><h4>Prestige</h4>
+        <p class="lever"><b>Best lever: win your standoffs.</b> Take a crisis's stake, make the rival give way to a demand, win battles and take lands.</p>
+        <p><b>Also raised by:</b> a peace on your terms, refusing a king's claim, warning a king away, deeds, an assertive stance (a little each winter).</p>
+        <p><b>Drained by:</b> conceding, defeats, lost clients, abandoning a friend, bowing to a king, a conciliatory stance.</p></div>
+      <div class="res"><h4>Fides</h4>
+        <p class="lever"><b>Best lever: stand firm on a just claim.</b> Do it again and again, and never threaten on a weak one.</p>
+        <p><b>Also raised by:</b> a historian (a work), kept promises, deeds.</p>
+        <p><b>Drained by:</b> ultimatums on weak claims, arming or declaring war without a just claim, a demand you don't back with war, abandoning a people under your protection, a ruler by decree. Taking a people under protection costs a little up front.</p></div>
+    </div>
+    <div class="box tip"><span class="tag">TIP: THE STANDING ENGINE</span><p>The most reliable way to act more each winter is a chain: <b>keep the factions content → Concord above 50 (then 75) → more Standing</b>, plus <b>back a friendly candidate → an ally in office → more Standing</b>. Early on, carry one vote by lobbying for the <i>A Vote Carried</i> deed: its extra point lasts the whole chronicle.</p></div>
+    <div class="box secret"><span class="tag">SECRET</span><p>Concord is fed by fear of the rival. A little tension at the right time can unite a divided city, and total peace can let your factions turn on each other. The Necessary Enemy strategy (Chapter 12) is built on this.</p></div>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="chapter" id="c5">
+  <div class="opener"><span class="num">5</span><div><h2>The crisis</h2><p>Mamertines appealing to both. A merchant killed in Ostia. Saguntum. When the two republics collide, you choose a posture, and so does the rival, in secret.</p></div></div>
+  <div class="body">
+    <figure><div class="shot"><img src="img/20-crisis.jpg" alt="A crisis card with its outcome grid"></div><figcaption><b>A crisis card.</b> The stake (Ebro), both claims to it, the rumor of Rome's War Fever, your three postures with their odds, the public gesture, and the <b>grid of every outcome</b>: your posture (rows) against theirs (columns), each cell marked ⚔ war, ✓ you take the stake, ✕ they take it, or — nothing moves. Their likeliest answer is underlined. Click a row (or a posture) to pick it, read what it can bring, then press the seal.</figcaption></figure>
+    <div class="two">
+      <div><h4>The three postures</h4><ul><li><b>Concede</b>: give way. Tension falls, the stake goes to them, and your hawks call you weak.</li><li><b>Stand firm</b>: refuse, but make no threat. Against a concession you win; against a threat, it's a stare-down.</li><li><b>Ultimatum</b>: threaten war. If they threaten back, or stand firm when Tension is high, it's war.</li></ul></div>
+      <div><h4>What to read before you choose</h4><ul><li><b>The claims.</b> Strong, arguable or weak. An ultimatum on a weak claim costs you Fides whatever happens; standing firm on a strong one earns it.</li><li><b>The rumor.</b> Higher War Fever makes the rival likelier to threaten. Trading posts narrow the rumor.</li><li><b>The odds bar</b> on each posture: the chance of war, and of the stake moving.</li></ul></div>
+    </div>
+    <figure><div class="shot"><img src="img/62-embassy.jpg" alt="An embassy with each answer's effects"></div><figcaption><b>An embassy.</b> Kings ask for recognition, grain, friendship or protection. Each answer says what it brings, in words and tokens (a gamble says it is one). Pick your answer and seal it; answering costs no Standing.</figcaption></figure>
+    <div class="box tip"><span class="tag">TIP: THE PUBLIC GESTURE</span><p>A fig in the council, a fold of the toga: making your posture public costs a Standing and makes the rival likelier to give way. The catch: if <em>you</em> then back down, it costs you more Prestige. Gesture when you mean it.</p></div>
+    <div class="box warn"><span class="tag">WARNING: TENSION</span><p>Tension is shared and climbs with every stare-down. Once it's high, an ultimatum that meets a firm refusal <b>is</b> war. If you're not armed, don't threaten at high Tension. Cool things first with a friendship treaty, or by conceding something small.</p></div>
+    <div class="box secret"><span class="tag">SECRET</span><p>A quarrel remembers. Every land you took by force, every threat on a weak claim, every refused demand is added to the claims on that stake. Pick your quarrels early and patiently, and when the big crisis comes your claim will be the strong one.</p></div>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="chapter" id="c6">
+  <div class="opener"><span class="num">6</span><div><h2>The Council and the houses</h2><p>A republic is a room full of people who want different things. The Council is where you find out which of them you need.</p></div></div>
+  <div class="body">
+    <figure><div class="shot"><img src="img/56-council-moods.jpg" alt="The Council view"></div><figcaption><b>The Council.</b> How the Council works, the seat ring by faction with each faction's mood beside it (hostile, sullen, wary, content, devoted), next winter's election with each candidate's expected seats, the policies and actions, and the leaders' Counsel. Check the moods before you bring a vote: a sullen faction is hard to win.</figcaption></figure>
+    <h3>Votes and lobbying</h3>
+    <p>Most actions are yours to take. Some are <b>contested</b>: war, mobilization, the tax, the stance, a colony, a treaty. These go to a vote. The card shows who is for, who is wavering and who is against, and a <b>Lobby</b> button for each faction. Lobbying pushes a faction your way for a Standing, but it resents being pressed.</p>
+    <figure><div class="shot"><img src="img/09-card-vote.jpg" alt="A contested motion"></div><figcaption><b>A vote in the making.</b> Mobilization to Armed: the bar shows the room, and each faction can be lobbied. The Standing and silver are spent even if the vote fails.</figcaption></figure>
+    <div class="two">
+      <div class="box note"><span class="tag">CARTHAGE</span><p>The <b>Council of Elders</b> decides; if it deadlocks, the question goes to the <b>popular assembly</b>, which follows the Popular Party. Suffetes are elected yearly and cannot serve twice running. Any man of your houses aged 28 or more can be given a command, and a beaten general answers to the <b>Hundred and Four</b>.</p></div>
+      <div class="box note"><span class="tag">ROME</span><p>The <b>Senate</b> votes, and a <b>tribune</b> can veto. Two consuls are elected each year, and each acts on his own initiative: you'll see what he means to do, and you can spend Standing to <b>persuade</b> him otherwise. Only consuls command armies, unless the Senate keeps a winning general in command as proconsul.</p></div>
+    </div>
+    <figure><div class="shot"><img src="img/32-rome-consuls.jpg" alt="Rome's consuls"></div><figcaption><b>Rome's consuls</b> announce what they'll do on their own. If a consul is about to do something foolish, persuade him; it costs two Standing.</figcaption></figure>
+    <h3>The houses</h3>
+    <figure><div class="shot"><img src="img/10-houses.jpg" alt="The Houses view"></div><figcaption><b>The Houses.</b> Every great family with its patron god, its influence and trend, its faction, and its men with their command and oratory. Houses rise, die out, and are replaced by new men.</figcaption></figure>
+    <div class="box tip"><span class="tag">TIP</span><p><b>Back a candidate</b> from a friendly faction. An ally in office earns you Standing every winter. For Rome it matters twice: consuls are your only generals, so back the ablest soldier before a war.</p></div>
+  </div>
+</section>
+
+<!-- 7 -->
+<section class="chapter" id="c7">
+  <div class="opener"><span class="num">7</span><div><h2>Works and lands</h2><p>Fields, harbors, mines, temples, colonies: the slow investments that compound into a richer, more populous, more rooted republic.</p></div></div>
+  <div class="body">
+    <figure><div class="shot"><img src="img/06-works.jpg" alt="The Works view"></div><figcaption><b>Trade and Works.</b> How the works are built, the works under way, the works you can begin (each tile shows its cost and what it gives), the purse, and the treasury.</figcaption></figure>
+    <figure><div class="shot"><img src="img/52-works-income.jpg" alt="Income as two bars"></div><figcaption><b>Where the silver comes from and goes.</b> Two bars on one scale: what comes in, land by land and source by source, and what goes out (the army, garrisons, wages). Hover a segment for its source.</figcaption></figure>
+    <h3>How works get paid</h3>
+    <p>You set the <b>purse</b> (nothing, a quarter, half, three quarters of income). The <b>steward</b> pays the works in order, the one you pin first, from the purse and the free hands. A work advances by what it was paid. When it's finished, its effect arrives: a temple honours its god, a colony plants settlers, fields raise a land's wealth for good.</p>
+    <div class="two">
+      <div><h4>The works</h4><ul>
+        <li><b>Fields</b>: wealth for good, and the land's people slowly grow.</li>
+        <li><b>Harbor</b>: wealth for a port.</li>
+        <li><b>Mines</b>: work a land's ore (the Iberian silver country above all).</li>
+        <li><b>Colony</b>: settlers turn a land's law and tongue toward yours for generations, and deepen your roots.</li>
+        <li><b>Temple</b>, <b>games</b>, <b>historian</b>, <b>envoys</b>, a <b>voyage</b>, a <b>fleet</b>.</li>
+      </ul></div>
+      <div class="box secret"><span class="tag">SECRET: THINGS THAT COMPOUND</span><p>Fields grow people; people give hands; hands build more works. Colonists build their own, so development on your own colony costs less silver. And you can build fields and harbors <b>in a client's land</b>: its tribute rises with its wealth, and it leans toward you for every level you build. That is how you turn a friend into a pillar.</p></div>
+    </div>
+    <figure><div class="shot"><img src="img/53-land-culture.jpg" alt="A land's card with its culture bars"></div><figcaption><b>A land's card</b> (click any land on the map): its gods, law and tongue as bars of Punic, Latin, Greek and local, each with the way it is drifting (hover for why), then its owner, wealth, people and roots, and what you can do there.</figcaption></figure>
+    <figure><div class="shot"><img src="img/14-lands.jpg" alt="The Lands view"></div><figcaption><b>Lands.</b> Every land you hold as a card: its wealth, people and roots, the levels built, a colony if there is one, and any work under way. Below: colonies, clients, protected peoples, and the land actions.</figcaption></figure>
+    <div class="box warn"><span class="tag">WARNING</span><p>War ravages works. A land that is harassed, besieged or in revolt loses half the progress of the work on it. Build in your heartland and your safe islands first; build on the frontier in peace.</p></div>
+    <div class="box tip"><span class="tag">TIP</span><p>A work in a client's land is a bet on their loyalty. If the client breaks away, the work under way is lost, and the levels you finished stay with the land. Tend the friendship (reward them, send envoys) while you build.</p></div>
+  </div>
+</section>
+
+<!-- 8 -->
+<section class="chapter" id="c8">
+  <div class="opener"><span class="num">8</span><div><h2>The courts of the world</h2><p>Nine watching powers, three great kings, a dozen free peoples. None of them act on your say-so, but all of them are listening.</p></div></div>
+  <div class="body">
+    <figure><div class="shot"><img src="img/11-courts.jpg" alt="The Courts view"></div><figcaption><b>The Courts.</b> How the world leans, the actions of diplomacy, then the watching powers, the great powers, your friends and missions, and your merchants abroad.</figcaption></figure>
+    <figure><div class="shot"><img src="img/54-courts-line.jpg" alt="The watching powers on one line"></div><figcaption><b>The watching powers on one line,</b> from Rome (left) to Carthage (right), the undecided middle shaded. A court near the edge of the middle can be swung by envoys, a gesture or a deed. Here, at war and blamed for it, Carthage has lost every court. Hover a court for every reason it leans.</figcaption></figure>
+    <div class="two">
+      <div><h4>Friends</h4><ul>
+        <li><b>Take under protection</b>: a public promise to a free people. They lean to you over the years. But if you give up their land in a standoff, or let a king take it, the world sees your word was empty.</li>
+        <li><b>Take a client</b>: a minor power that accepts you as patron pays tribute while it's loyal. It accepts for good reasons: your standing, your good faith, a border, your armies nearby, your protection.</li>
+        <li><b>Reward a client</b>: loyalty fades each year unless it's tended.</li>
+      </ul></div>
+      <div><h4>Influence</h4><ul>
+        <li><b>Send envoys</b> to move a court your way (a mission of two years).</li>
+        <li><b>Patronize a historian</b>: Fides, the long way.</li>
+        <li><b>Open a trading post</b>: trade, and ears. Enough posts and your merchants narrow the rumor of the rival's fever, then learn its plan.</li>
+        <li><b>Demand redress</b>: a formal demand over a quarrel. Refused, it strengthens your claim, but it's a commitment: answer with war within a few years or lose face.</li>
+        <li><b>A treaty</b>: a commercial treaty, or friendship to lower Tension.</li>
+      </ul></div>
+    </div>
+    <figure><div class="shot"><img src="img/12-card-protect.jpg" alt="Protecting a people"></div><figcaption><b>Take under protection.</b> Each free people is a piece showing how far it already leans to you. The price: Standing, and a little Fides for the promise.</figcaption></figure>
+    <div class="box warn"><span class="tag">WARNING: TWO PROTECTORS</span><p>If both republics protect the same people (Saguntum, Numidia, Massalia, Syracuse, Messana), a crisis over their land can fire in which <b>whoever gives way breaks a promise</b>. This is how the Second Punic War began. Protect a people the rival already courts only if you're ready to stand.</p></div>
+    <div class="box secret"><span class="tag">SECRET: THE GREAT KINGS</span><p>Macedon, the Seleucids and Egypt fight their own wars, swallow minor powers, and can <b>join yours</b> if they lean far enough your way. Hannibal's Alliance is built on this. Watch their dials in the Courts, and remember that a friend a king conquers while you stood by is a promise broken.</p></div>
+  </div>
+</section>
+
+<!-- 9 -->
+<section class="chapter" id="c9">
+  <div class="opener"><span class="num">9</span><div><h2>War</h2><p>You never move armies. You raise them, choose the men who lead them and give them orders; the war is theirs to win or lose. The peace is yours.</p></div></div>
+  <div class="body">
+    <figure><div class="shot"><img src="img/23-war-begins.jpg" alt="War begins"></div><figcaption><b>War.</b> A scene marks the moment; the Courts show who the world blames. The watching powers turn against the aggressor, so a war on a just claim keeps more friends.</figcaption></figure>
+    <h3>Mobilization</h3>
+    <p>Five footings: Peace, Watchful, Armed, War footing, Total war. Each level allows more commands and makes every campaign stronger, and costs more: upkeep, and hands taken from the fields. Arming without a just claim while Tension is low alarms the rival and costs Fides.</p>
+    <figure><div class="shot"><img src="img/25-warroom.jpg" alt="The War Room at war"></div><figcaption><b>The War Room at war.</b> The war's score, your mobilization and free hands, your generals in the field, and the commands.</figcaption></figure>
+    <h3>Commissions and mandates</h3>
+    <figure><div class="shot"><img src="img/55b-war-chart.jpg" alt="The war, winter by winter"></div><figcaption><b>The war, winter by winter.</b> Both sides' score since the war began (the peace reads the gap between them), and the weariness a long war lays on both cities. Each general in the field shows his battles won and lost as marks.</figcaption></figure>
+    <figure><div class="shot"><img src="img/26-card-commission.jpg" alt="Commissioning a general"></div><figcaption><b>Commission a general.</b> Choose his orders (seek battle, besiege, harass, hold), the man, and the land. The card forecasts the campaign: your attack against their defense, the luck of war, and the chance a storm scatters the fleet.</figcaption></figure>
+    <div class="two">
+      <ul>
+        <li><b>Seek battle</b>: meet their army in the field. Victories win the war's score and can take a land.</li>
+        <li><b>Besiege</b>: the only way to take a <b>capital</b>. Slow and costly.</li>
+        <li><b>Harass</b>: raid a land, ravage its works, bleed their economy.</li>
+        <li><b>Hold</b>: defend one of your own lands on the frontier.</li>
+      </ul>
+      <figure><div class="shot"><img src="img/27-campaign-map.jpg" alt="A general's march on the map"></div><figcaption>Your general's march drawn on the map.</figcaption></figure>
+    </div>
+    <h3>The peace</h3>
+    <figure><div class="shot"><img src="img/28-card-peace.jpg" alt="Offering peace"></div><figcaption><b>Offer peace.</b> Each keeps what it holds, or they pay an indemnity, or they cede the lands you fought over. The card tells you whether they'd accept, and why.</figcaption></figure>
+    <div class="box secret"><span class="tag">SECRET: THE WINNER DICTATES</span><p>If you lead the war clearly and have fought over lands they still hold, even a modest offer is accepted <b>on your terms</b>: they cede those lands. The theatre is what you actually campaigned in, so if you want Sicily at the peace, fight in Sicily.</p></div>
+    <div class="box warn"><span class="tag">WARNING: LONG WARS</span><p>Weariness grows every year of war, Concord frays, works stall, and the rival's allies can join. Most wars are won in their first few years and lost in their last. Take your gains and make peace while you lead.</p></div>
+  </div>
+</section>
+
+<!-- 10 -->
+<section class="chapter" id="c10">
+  <div class="opener"><span class="num">10</span><div><h2>The gods and the long memory</h2><p>The gods never act. But the people who love them vote, fight and remember, and what the lands worship in AD 1 is part of your legacy.</p></div></div>
+  <div class="body">
+    <figure><div class="shot"><img src="img/13-gods.jpg" alt="The Gods view"></div><figcaption><b>The Gods.</b> Your state cult, each god's standing and the houses devoted to them, the religious stance, foreign cults you might adopt, the priesthoods, and the rites.</figcaption></figure>
+    <div class="two">
+      <div><ul>
+        <li><b>Honour the people's god</b> (Tanit, Ceres) to keep Concord; neglect frays it.</li>
+        <li><b>Festivals and temples</b> please the factions that love a god and lift the houses devoted to it.</li>
+        <li><b>The stance</b>: traditional, tolerant or syncretic. Syncretic lets your gods be named as the Greeks' own, which the Greek courts like.</li>
+        <li><b>Adopt a foreign cult</b>: shared gods make courts lean your way, but the pious factions may object.</li>
+      </ul></div>
+      <div><ul>
+        <li><b>Priesthoods</b> are for life. An augur can halt a vote; Rome's Pontifex can lengthen the year to keep a good consul in office.</li>
+        <li><b>Rome's prodigies</b>: fear breeds omens. Expiate them.</li>
+        <li><b>Carthage's tithe to Tyre</b>: an old duty to Melqart, noticed in Egypt.</li>
+        <li><b>Evocatio</b> (Rome): call a besieged city's gods out before you take it.</li>
+      </ul></div>
+    </div>
+    <figure><div class="shot"><img src="img/61-card-stance.jpg" alt="The religious stance card"></div><figcaption><b>A policy says what it does.</b> Each option of a standing policy (the tax, the stance, religion, culture, the treaty) says what it does every winter, and which one is in force now. Here, the vote as it stands and the factions you could lobby.</figcaption></figure>
+    <h3>Culture: the slowest war</h3>
+    <p>Every land has its gods, its law and its tongue, each a mix of Punic, Latin, Greek and local, drifting at its own pace under its ruler, its colonists and its clients. The Lands view's <b>policy toward subject peoples</b> sets the tone: <b>Assimilate</b> (fast, resented), <b>Accommodate</b> (slow and steady), <b>Blend</b> (new mixed peoples and cults grow wherever cultures meet, and they hold to you best of all).</p>
+    <div class="box secret"><span class="tag">SECRET</span><p>The legacy weighs <b>people</b>, not territory. A small, crowded, Punic-speaking land counts for more in AD 2000 than a large empty one. Fields that grow people and colonies that teach them your tongue are the most durable investment in the game.</p></div>
+  </div>
+</section>
+
+<!-- 11 -->
+<section class="chapter" id="c11">
+  <div class="opener"><span class="num">11</span><div><h2>Playing Carthage, playing Rome</h2><p>The two republics play by different rules because they were different places: one rich in silver and poor in men, the other the reverse.</p></div></div>
+  <div class="body">
+    <div class="plans">
+      <div class="plan side-c"><h4>Carthage</h4><span class="who">Rich in silver · poor in men · mistress of the sea</span>
+        <p class="moves"><b>Strengths:</b> the richest treasury, the best harbors, the secret sea routes beyond the Pillars, a navy that fears no one early on.</p>
+        <p class="moves"><b>Weaknesses:</b> few citizens, so armies are <b>hired</b> at the mercenary markets. Companies want wages every year; unpaid, they desert, and in the worst case they rise in revolt (the Truceless War).</p>
+        <p class="moves"><b>Tools:</b> the merchant houses' loan in wartime; a general his army follows (a winning commander's companies don't desert); the people defend their own walls.</p>
+        <p class="moves"><b>Watch:</b> Libya. A war that squeezes your subjects can turn your heartland against you.</p></div>
+      <div class="plan side-r"><h4>Rome</h4><span class="who">Rich in men · poor in silver · the Italian confederacy</span>
+        <p class="moves"><b>Strengths:</b> the census. Citizen legions cost little silver. The Italian allies lend hands and levies. Veteran colonies plant Rome on every land it takes.</p>
+        <p class="moves"><b>Weaknesses:</b> a thin treasury, weaker at sea, storms, and consuls with minds of their own who change every year.</p>
+        <p class="moves"><b>Tools:</b> the great houses lend in wartime; prorogation keeps a winning general; honours for the allies keep them loyal.</p>
+        <p class="moves"><b>Watch:</b> the allies' loyalty. After a great defeat, allies can defect, and a thin census means no new legions.</p></div>
+    </div>
+    <figure><div class="shot"><img src="img/30-rome-map.jpg" alt="Playing Rome"></div><figcaption><b>Playing Rome.</b> The same Mediterranean from the other shore. Your instruments read differently: fewer talents, more hands.</figcaption></figure>
+    <div class="box tip"><span class="tag">TIP FOR CARTHAGE</span><p>Your silver is your army. Keep a war chest before you threaten anyone, pay the companies before the peace, and never let arrears pile up in a long war.</p></div>
+    <div class="box tip"><span class="tag">TIP FOR ROME</span><p>Your men are your silver. Strike hard, take the lands you fought over, then give the census a generation of peace to refill. Keep the allies honoured, especially after a defeat.</p></div>
+  </div>
+</section>
+
+<!-- 12 -->
+<section class="chapter" id="c12">
+  <div class="opener"><span class="num">12</span><div><h2>Fifteen grand strategies</h2><p>The rival plays one of these for the whole game. Your faction leaders urge them on you as Counsel. Each is a real path through history, and each can win.</p></div></div>
+  <div class="body">
+    <p>Every strategy below is a <b>playbook</b>: the idea, the signature moves, and what to watch. Purple is for Carthage, red for Rome, bronze for either side.</p>
+    <div class="plans">
+      <div class="plan side-c"><h4>The Barcid Gamble</h4><span class="who"><b>Carthage</b> · Hamilcar and Hannibal in Iberia</span><p>Win the silver country in the standoffs, plant Punic colonies, and let the mines pay for the army that guards them.</p><p class="moves"><b>Moves:</b> protect the Iberians, work the mines, colonize Gades and the Iberian coast, sail beyond the Pillars. <b>Watch:</b> Rome's Ebro line and Saguntum.</p></div>
+      <div class="plan side-c"><h4>The Sea Wall</h4><span class="who"><b>Carthage</b> · Hamilcar on Eryx</span><p>Hold the walls with your best man, let Rome's consuls cross the sea and break on them, and take an indemnity when its allies waver.</p><p class="moves"><b>Moves:</b> harbors, a fleet, hold orders on the frontier, patience. <b>Watch:</b> don't let Rome choose the battlefield.</p></div>
+      <div class="plan side-c"><h4>Hannibal's Alliance</h4><span class="who"><b>Carthage</b> · Philip V and Hannibal</span><p>Court Macedon with envoys and a Greek face for your gods until it leans your way, then fight the war it joins.</p><p class="moves"><b>Moves:</b> envoys to Macedon, the syncretic stance, patience until the king's dial swings. <b>Watch:</b> time the war to the alliance.</p></div>
+      <div class="plan side-c"><h4>Silver in a Burst</h4><span class="who"><b>Carthage</b> · nobody lends to Carthage</span><p>Stockpile in peace, strike for a few years with hired companies and a hired Greek, take an indemnity, and pay the companies off before the peace.</p><p class="moves"><b>Moves:</b> a big treasury, the best companies, a short war. <b>Watch:</b> arrears. A burst that runs long becomes a revolt.</p></div>
+      <div class="plan side-b"><h4>Patron of the West</h4><span class="who"><b>Either side</b> · Syphax, Masinissa and the kings between</span><p>Take clients, tend them, and let the minor powers see whose protection is worth having.</p><p class="moves"><b>Moves:</b> protect, then take clients; reward them; build fields in their lands; envoys to the kings. <b>Watch:</b> loyalty fades. Tend it every few winters.</p></div>
+      <div class="plan side-b"><h4>The Necessary Enemy</h4><span class="who"><b>Either side</b> · Hanno and Scipio Nasica agree</span><p>Keep the rival, keep the peace, trade with the world, and let fear of the enemy hold the republic together.</p><p class="moves"><b>Moves:</b> a conciliatory stance, a light tax, a big works purse, fields and harbors, trading posts. <b>Watch:</b> Concord without a threat to fear.</p></div>
+      <div class="plan side-r"><h4>The Latin Name</h4><span class="who"><b>Rome</b> · the Latin colonies</span><p>Settle citizens, honour the allies, and draw land, law and levies from one network.</p><p class="moves"><b>Moves:</b> colonies through Italy and beyond, honours for the allies, the plebs kept content. <b>Watch:</b> colonies need three work slots' worth of patience.</p></div>
+      <div class="plan side-r"><h4>Pax Deorum</h4><span class="who"><b>Rome</b> · religion as state machinery</span><p>Expiate every prodigy, honour Jupiter, keep the Pontifex a friend, and lengthen the year to keep a good consul in command.</p><p class="moves"><b>Moves:</b> expiations, festivals, back your priests, then fight with a consul who stays. <b>Watch:</b> the omens after defeats.</p></div>
+      <div class="plan side-r"><h4>Strangle the Markets</h4><span class="who"><b>Rome</b> · Rome in Numidia and Spain</span><p>Carthage buys its armies, so take the peoples it buys them from as clients or as stakes, and leave it slingers.</p><p class="moves"><b>Moves:</b> protect and befriend the Numidians, Iberians, Celtiberians, Balearics; bully in their crises. <b>Watch:</b> it pays off slowly; be patient.</p></div>
+      <div class="plan side-r"><h4>Blood, Spent in Short Wars</h4><span class="who"><b>Rome</b> · 241 and 201 BC</span><p>Strike hard for a few years, take the lands fought over or an indemnity while the census holds, then a generation of peace to refill it.</p><p class="moves"><b>Moves:</b> arm, back soldiers for consul, fight where you want land, dictate the peace. <b>Watch:</b> the census.</p></div>
+      <div class="plan side-r"><h4>Fides for the Greek Audience</h4><span class="who"><b>Rome</b> · Fabius Pictor writing in Greek</span><p>Keep faith, never threaten on a weak claim, and let the courts that weigh good faith decide the war of reputations.</p><p class="moves"><b>Moves:</b> historians, envoys, firm only on just claims, no pretexts. <b>Watch:</b> Prestige can lag while Fides soars.</p></div>
+      <div class="plan side-r"><h4>Evocatio and the Afro-Roman Bridge</h4><span class="who"><b>Rome</b> · Juno of Veii, Caelestis of Carthage</span><p>Call out a city's gods before its siege, hold what you take, and let Africa blend rather than be scoured.</p><p class="moves"><b>Moves:</b> war into Africa, evocatio before sieges, colonies and the Blend policy there. <b>Watch:</b> a long African war is a hard one.</p></div>
+      <div class="plan side-b"><h4>The Greek Face</h4><span class="who"><b>Either side</b> · Melqart as Herakles</span><p>Name your gods as the Greeks' own, adopt theirs, and let kinship at the Greek courts do what envoys cannot.</p><p class="moves"><b>Moves:</b> the syncretic stance, foreign cults, Greek festivals. <b>Watch:</b> the pious factions at home.</p></div>
+      <div class="plan side-b"><h4>Righteous War</h4><span class="who"><b>Either side</b> · a crusade</span><p>A just cause, a city behind its own god, a Greek court on your side: let the rival do the threatening, and go to war only as a crusade.</p><p class="moves"><b>Moves:</b> build claims, demand redress, stand firm, then declare on a just claim. <b>Watch:</b> a claim takes years to become just.</p></div>
+      <div class="plan side-b"><h4>Delenda Est</h4><span class="who"><b>Either side</b> · Cato's fig</span><p>Arm, threaten, and march on the enemy's city, whatever it costs the republic afterward.</p><p class="moves"><b>Moves:</b> total mobilization, sieges of the capital, no peace short of the end. <b>Watch:</b> what it costs the republic afterward. A conqueror's republic may not stay a republic.</p></div>
+    </div>
+    <div class="box tip"><span class="tag">TIP</span><p>You don't have to pick a strategy up front. Read the Counsel each winter: the leader of your strongest faction urges the plan nearest his agenda, and following it pleases that faction. Many good games switch strategy halfway, from building to striking.</p></div>
+  </div>
+</section>
+
+<!-- 13 -->
+<section class="chapter" id="c13">
+  <div class="opener"><span class="num">13</span><div><h2>Know your rival</h2><p>The rival plays one plan for the whole game, at one of four levels of skill. The skill is real play, never bonuses: a masterly rival simply plays better.</p></div></div>
+  <div class="body">
+    <div class="two">
+      <div><h4>The four levels</h4><ul>
+        <li><b>Novice</b>: no plan at all; spends what it has.</li>
+        <li><b>Senator</b>: a plan, but no lobbying or persuasion.</li>
+        <li><b>Statesman</b>: the full game: a plan, lobbying, persuasion.</li>
+        <li><b>Strategos</b>: foresight. It picks its plan by looking ahead, keeps a war chest, and threatens only when its window is open.</li>
+      </ul></div>
+      <div class="box note"><span class="tag">THE DOSSIER</span><p>The outliner's dossier tells you what you know: the rumor of the rival's War Fever and which courts lean its way. Open trading posts and your merchants narrow the rumor, hear the rival's intentions, and eventually <b>learn its plan by name</b>.</p></div>
+    </div>
+    <h3>The threat chart</h3>
+    <p>How dangerous each plan is when a statesman plays it, as the game's own harness rated them over many games. More stars means stronger against the field.</p>
+    <table>
+      <tr><th>If you play Rome, Carthage may play…</th><th>Threat</th><th>If you play Carthage, Rome may play…</th><th>Threat</th></tr>
+      <tr><td>Patron of the West</td><td class="stars">★★★★</td><td>Blood, Spent in Short Wars</td><td class="stars">★★★★</td></tr>
+      <tr><td>The Sea Wall</td><td class="stars">★★★★</td><td>Patron of the West</td><td class="stars">★★★★</td></tr>
+      <tr><td>Hannibal's Alliance</td><td class="stars">★★★★</td><td>Evocatio and the Afro-Roman Bridge</td><td class="stars">★★★★</td></tr>
+      <tr><td>The Barcid Gamble</td><td class="stars">★★★<i>★</i></td><td>Delenda Est</td><td class="stars">★★★★</td></tr>
+      <tr><td>Silver in a Burst</td><td class="stars">★★★<i>★</i></td><td>Strangle the Markets</td><td class="stars">★★★<i>★</i></td></tr>
+      <tr><td>Delenda Est</td><td class="stars">★★★<i>★</i></td><td>Pax Deorum</td><td class="stars">★★★<i>★</i></td></tr>
+      <tr><td>The Necessary Enemy</td><td class="stars">★★<i>★★</i></td><td>The Latin Name</td><td class="stars">★★★<i>★</i></td></tr>
+      <tr><td>Righteous War</td><td class="stars">★★<i>★★</i></td><td>Fides for the Greek Audience</td><td class="stars">★★<i>★★</i></td></tr>
+      <tr><td>The Greek Face</td><td class="stars">★<i>★★★</i></td><td>Righteous War</td><td class="stars">★★<i>★★</i></td></tr>
+      <tr><td></td><td></td><td>The Greek Face</td><td class="stars">★<i>★★★</i></td></tr>
+      <tr><td></td><td></td><td>The Necessary Enemy</td><td class="stars">★<i>★★★</i></td></tr>
+    </table>
+    <div class="box tip"><span class="tag">READING THE RIVAL</span><p>What the rival does early gives it away. Envoys to Macedon smell of Hannibal's Alliance. Colonies and honours for the allies mean the Latin Name. A treasury that swells while nothing happens is Silver in a Burst getting ready. Clients courted everywhere mean Patron of the West. A rival that keeps arming without a claim is spoiling for Delenda Est.</p></div>
+    <div class="box secret"><span class="tag">SECRET: COUNTERS</span><p>Against <b>Silver in a Burst</b>, make the war long: its companies' arrears will do your work. Against <b>Patron of the West</b>, court the same peoples first; a client can't serve two patrons. Against <b>Hannibal's Alliance</b>, send your own envoys to Macedon. Against <b>Short Wars</b>, hold and refuse the decisive battle until its census runs thin.</p></div>
+  </div>
+</section>
+
+<!-- 14 -->
+<section class="chapter" id="c14">
+  <div class="opener"><span class="num">14</span><div><h2>Deeds and the legacy</h2><p>Some acts the historians write down at once. Every one of them pays within the same chronicle, and nothing carries over to the next game.</p></div></div>
+  <div class="body">
+    <figure><div class="shot"><img src="img/15-deeds.jpg" alt="The Deeds view"></div><figcaption><b>Deeds.</b> Your aim at the top (click a legacy to chase it), then every deed your side can earn, with its needs as a live checklist.</figcaption></figure>
+    <p>There are thirty deeds in eight styles. A few are <b>deeds of the ending</b> (<i>Two Suns</i>, <i>The Republic Endures</i>, <i>The Punic Atlantic</i>): judged as the chronicle closes, they bring honour in the legacy, not a boon. Every other one, once recorded, gives you a <b>boon</b> for the rest of the chronicle: a bonus in campaigns, a friendlier court, a cheaper colony, more Standing. A few hints, without spoiling the rest:</p>
+    <table>
+      <tr><th>Style</th><th>Some deeds</th><th>A hint</th></tr>
+      <tr><td><b>Conqueror</b></td><td>First Blood · A Land Taken · The Peace of Lutatius</td><td>The Peace of Lutatius is won at the peace table, not on the field: ask for the lands you fought over.</td></tr>
+      <tr><td><b>Barcid</b> (Carthage)</td><td>New Carthage · The Silver Road · The Punic Atlantic</td><td>It all starts at Mastia, the silver country.</td></tr>
+      <tr><td><b>Merchant</b></td><td>A House Abroad · Six Harbors · The Merchant Peace · Two Suns</td><td>The first trading post is an easy deed and a lasting boon.</td></tr>
+      <tr><td><b>Patron</b></td><td>A Friend Among the Numidians · Patron of the West · The Leash</td><td>Protection first, clientship after.</td></tr>
+      <tr><td><b>Posturer</b></td><td>The Fold Drops · Just Claims · Righteous War</td><td>Just Claims rewards patience: stand firm when you're right, again and again.</td></tr>
+      <tr><td><b>Priest</b></td><td>A Temple Built · Pax Deorum · Evocatio</td><td>A temple is a work like any other. Start one early.</td></tr>
+      <tr><td><b>Republican</b></td><td>A Vote Carried · The United City · The Republic Endures</td><td>Win a close vote by lobbying and the histories notice.</td></tr>
+      <tr><td><b>Colonist · Kingmaker</b></td><td>Settlers · The Latin Name · A King's Ear · Philip's Pact</td><td>A great power joining your war is rare. Court it for years.</td></tr>
+    </table>
+    <figure><div class="shot"><img src="img/63-deeds-card.jpg" alt="The histories record"></div><figcaption><b>When the histories record a deed,</b> the turn's deeds arrive as one card: yours first, then the rival's (its boons help Rome, so they matter too), each with what earned it, what it gave at once, and its boon for the rest of the chronicle. Click the card to open the Deeds; every other pop-up likewise opens its own view.</figcaption></figure>
+    <div class="box tip"><span class="tag">TIP</span><p>The outliner names the deed you're closest to ("One step from…"). An easy early deed is often worth a detour for its boon.</p></div>
+    <h3>Watching the story</h3>
+    <div class="two">
+      <figure><div class="shot"><img src="img/51-journal-rivalry.jpg" alt="The rivalry chart"></div><figcaption><b>The rivalry,</b> at the head of the Journal: both republics' Prestige winter by winter, high Tension and wars shaded, ◆ crises, ⚔ wars, ☮ peaces and ✦ your deeds pinned. Hover any winter.</figcaption></figure>
+      <figure><div class="shot"><img src="img/57-aim-meter.png" alt="The aim as a meter"></div><figcaption><b>Your aim in the outliner:</b> each target as a bar (where you are, and the target), with the lever that moves it underneath.</figcaption></figure>
+    </div>
+    <h3>The ending</h3>
+    <p>The legacy is sealed until the chronicle ends. Then it comes as a sequence: the title of your age, the Chronicle's judgment, the eras to AD 2000, the year 2000 itself, and the hinges (the moments that turned it).</p>
+    <div class="gallery">
+      <figure><div class="shot"><img src="img/41-ending.jpg" alt="The title of the age"></div><figcaption><b>The title.</b> What the historians call your age.</figcaption></figure>
+      <figure><div class="shot"><img src="img/42-ending.jpg" alt="The judgment"></div><figcaption><b>The judgment.</b> Lands, tongues, gods, law and name, weighed by people.</figcaption></figure>
+      <figure><div class="shot"><img src="img/43-ending.jpg" alt="The eras"></div><figcaption><b>The eras.</b> Your world, century by century.</figcaption></figure>
+      <figure><div class="shot"><img src="img/44-ending.jpg" alt="The year 2000"></div><figcaption><b>The year 2000.</b> A day in New Carthage, in the world you made.</figcaption></figure>
+    </div>
+    <h3>The aims <span class="new">NEW</span></h3>
+    <div class="box note"><span class="tag">WHAT AN AIM IS FOR</span><p>An aim is an <b>ambition for the chronicle</b>: a focus with three or four targets, measured as you play (not guessed from the far future), each with the lever that moves it. It is a <b>compass, not a score</b>. It changes nothing in play, and the rival never knows it. When the chronicle ends, the judgment tells you whether you reached it. Choose one in the Deeds view. The difficulty says how often the computer gets there without even aiming for it.</p></div>
+    <table>
+      <tr><th>Focus</th><th>Aim</th><th>The targets</th><th>Difficulty</th></tr>
+      <tr><td><b>Culture</b></td><td>The Punic West / The Latin West</td><td>The West speaks your tongue, prays to your gods and lives under your law; colonies founded</td><td>Hard</td></tr>
+      <tr><td><b>Conquest</b></td><td>Mistress / Master of the Middle Sea</td><td>Lands held; Sicily and Sardinia; a peace that cedes land to you</td><td>Hard</td></tr>
+      <tr><td><b>Wealth</b></td><td>The Merchant Republic</td><td>Income a year; levels of fields, harbors and mines</td><td>Moderate</td></tr>
+      <tr><td><b>Friends</b></td><td>Patron of the West</td><td>Loyal clients; peoples under your protection; watching powers on your side</td><td>Hard</td></tr>
+      <tr><td><b>Good name</b></td><td>Carthage's Good Name / Roman Faith</td><td>Fides; Prestige; the world reads your historians</td><td>Moderate</td></tr>
+      <tr><td><b>Peace</b></td><td>Two Suns</td><td>Both capitals stand; forty years at peace; Concord; still a republic</td><td>Moderate</td></tr>
+      <tr><td><b>Destruction</b></td><td>Roma Deleta / Delenda Est</td><td>The enemy's city taken, and still a republic after it</td><td>Very hard</td></tr>
+      <tr><td><b>The ocean</b> (Carthage)</td><td>The Punic Atlantic</td><td>Gades and Mastia; Iberia speaks Punic; mines in Iberia; secret routes</td><td>Very hard</td></tr>
+      <tr><td><b>Blending</b> (Rome)</td><td>Afro-Roman Africa</td><td>African lands held or befriended; a Latin blend spoken; the Blend policy</td><td>Very hard</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- 15 -->
+<section class="chapter" id="c15">
+  <div class="opener"><span class="num">15</span><div><h2>Secrets and quick reference</h2><p>What veterans of the Middle Sea wish someone had told them.</p></div></div>
+  <div class="body">
+    <div class="two">
+      <div class="box secret"><span class="tag">TEN SECRETS</span><ol>
+        <li>Standing carries over. A quiet winter is an investment.</li>
+        <li>Fear of the rival builds Concord; a perfect peace can split your city.</li>
+        <li>A claim grows with every grievance. Quarrel patiently.</li>
+        <li>The land you campaign in is the land you can take at the peace.</li>
+        <li>Only a siege takes a capital.</li>
+        <li>Colonists build their own fields more cheaply.</li>
+        <li>Works in a client's land buy loyalty and tribute at once.</li>
+        <li>Trading posts are also spies: enough of them reveal the rival's plan.</li>
+        <li>The legacy counts people, not acres.</li>
+        <li>Every deed's boon lasts the whole chronicle. Earn the easy ones early.</li>
+      </ol></div>
+      <div class="box warn"><span class="tag">COMMON MISTAKES</span><ul>
+        <li>Threatening at high Tension without an army.</li>
+        <li>Ultimatums on weak claims (Fides, gone).</li>
+        <li>Opening three works on a small purse, so all three stall.</li>
+        <li>Promising protection you won't defend.</li>
+        <li>Letting a war run on for a decade.</li>
+        <li>As Carthage: arrears. As Rome: the allies after a defeat.</li>
+        <li>Ignoring the Counsel, and the factions who gave it.</li>
+      </ul></div>
+    </div>
+    <h3>Glossary</h3>
+    <div class="glossary">
+      <div><b>Standing</b>Political capital, 0 to 10, earned each winter and spent on every action, lobby and persuasion.</div>
+      <div><b>Works purse</b>The share of income the steward spends on works, in order.</div>
+      <div><b>Hands</b>The year's labour and levies; the army takes them first.</div>
+      <div><b>Concord</b>How united your city is.</div>
+      <div><b>Prestige · Fides</b>Won standoffs · kept faith. The world leans by both.</div>
+      <div><b>Tension</b>The shared track, 0 to 5. At the top, a threat met firmly is war.</div>
+      <div><b>War Fever</b>The rival's hidden appetite for war, seen as a rumor band.</div>
+      <div><b>Claim</b>Each side's case to a stake, plus every grievance since.</div>
+      <div><b>Stake</b>The land a standoff is over; the winner takes it.</div>
+      <div><b>Public gesture</b>A posture made in public: stronger, and costlier to abandon.</div>
+      <div><b>Protection</b>A public promise to a free people.</div>
+      <div><b>Client</b>A minor power that takes you as patron and pays tribute while loyal.</div>
+      <div><b>Roots</b>How firmly a ruler holds a land.</div>
+      <div><b>Commission · mandate</b>A general sent to a land with orders.</div>
+      <div><b>Cession</b>A peace term: the lands fought over change hands.</div>
+      <div><b>The Hundred and Four</b>Carthage's tribunal for beaten generals.</div>
+      <div><b>Socii</b>Rome's Italian allies.</div>
+      <div><b>Lens</b>An action chosen first, then its land on the map.</div>
+      <div><b>Counsel</b>The grand strategies, urged by your faction leaders.</div>
+      <div><b>Deed</b>An act the histories record; its boon lasts the chronicle.</div>
+    </div>
+    <div class="box note"><span class="tag">ONE LAST THING</span><p>Hover everything. Every number in Carthago has its reasons one hover away. When you wonder "why did that happen?", the answer is on the screen. If it isn't, that's worth a note in the playtest report.</p></div>
+  </div>
+</section>
+
+<footer>Carthago · The Chronicler's Strategy Guide · screenshots from the build of 27 September 2026 (Increment 47) · the game changes; the Middle Sea does not.</footer>
+</div>
+</body>
+</html>
